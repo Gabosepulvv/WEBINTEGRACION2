@@ -1,0 +1,153 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoParts - Portal Cliente</title>
+  <link rel="stylesheet" href="{% static 'autoparts/css/style.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="{% static 'autoparts/img/logo.png' %}" alt="AutoParts Logo">
+      <h1>AutoParts</h1>
+    </div>
+    <div class="nav-buttons">
+      <button class="carrito-icono" onclick="toggleCarrito()">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="carrito-contador">0</span>
+      </button>
+      <button class="btn-usuario">
+        <i class="fas fa-user"></i>
+        Mi Cuenta
+      </button>
+    </div>
+  </nav>
+
+  <div class="categorias-nav">
+    <button class="categoria-btn active" onclick="filtrarProductos('todos')">Todos</button>
+    <button class="categoria-btn" onclick="filtrarProductos('baterias')">Baterías</button>
+    <button class="categoria-btn" onclick="filtrarProductos('neumaticos')">Neumáticos</button>
+    <button class="categoria-btn" onclick="filtrarProductos('frenos')">Frenos</button>
+    <button class="categoria-btn" onclick="filtrarProductos('aceites')">Aceites</button>
+  </div>
+
+  <!-- Sidebar del carrito mejorado -->
+  <div class="sidebar" id="carritoSidebar">
+    <div class="carrito-header">
+      <h3>Carrito de Compras</h3>
+      <button onclick="toggleCarrito()" class="btn-cerrar"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="carritoContenido" class="carrito-items"></div>
+    <div class="carrito-footer">
+      <p><strong>Total: $<span id="carritoTotal">0</span></strong></p>
+      <button class="btn-comprar" onclick="mostrarFormularioEntrega()">
+        <i class="fas fa-shopping-bag"></i> Realizar Pedido
+      </button>
+    </div>
+  </div>
+
+  <!-- Productos con diseño mejorado -->
+  <section class="catalogo-contenedor" id="productos-cliente">
+    <div class="filtros">
+      <input type="text" id="busqueda" placeholder="Buscar productos..." class="busqueda-input">
+      <select id="ordenar" class="ordenar-select">
+        <option value="relevancia">Ordenar por Relevancia</option>
+        <option value="precio-bajo">Precio: Menor a Mayor</option>
+        <option value="precio-alto">Precio: Mayor a Menor</option>
+      </select>
+    </div>
+    <div class="productos-grid" id="productos-grid">
+      <!-- Los productos se cargarán dinámicamente aquí -->
+    </div>
+  </section>
+
+  <!-- Formulario de entrega mejorado -->
+  <div id="formEntrega" class="modal">
+    <div class="modal-contenido">
+      <div class="modal-header">
+        <h2>Detalles de Entrega</h2>
+        <button onclick="cerrarFormulario()" class="btn-cerrar"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="formulario-pasos">
+        <div class="paso active">1. Datos Personales</div>
+        <div class="paso">2. Dirección</div>
+        <div class="paso">3. Confirmación</div>
+      </div>
+
+      <form id="formularioEntrega" onsubmit="return false;">
+        <div class="campo-formulario">
+          <label for="nombreEntrega">Nombre completo</label>
+          <input type="text" id="nombreEntrega" required>
+          <span id="errornombreEntrega" class="error-mensaje"></span>
+        </div>
+
+        <div class="campo-formulario">
+          <label for="contactoEntrega">Número de contacto</label>
+          <input type="tel" id="contactoEntrega" required>
+          <span id="errorcontactoEntrega" class="error-mensaje"></span>
+        </div>
+
+        <div class="campo-formulario">
+          <label for="emailEntrega">Correo electrónico</label>
+          <input type="email" id="emailEntrega" required>
+          <span id="erroremailEntrega" class="error-mensaje"></span>
+        </div>
+
+        <div class="opciones-entrega">
+          <h3>Método de entrega</h3>
+          <label class="opcion-radio">
+            <input type="radio" name="tipoEntrega" value="retiro" checked>
+            <span class="radio-custom"></span>
+            Retiro en tienda
+          </label>
+          <label class="opcion-radio">
+            <input type="radio" name="tipoEntrega" value="delivery">
+            <span class="radio-custom"></span>
+            Delivery
+          </label>
+        </div>
+
+        <div id="formDelivery" class="campos-delivery">
+          <div class="campo-formulario">
+            <label for="comunaEntrega">Comuna</label>
+            <select id="comunaEntrega" required>
+              <option value="">Seleccione una comuna</option>
+              <!-- Agregar comunas dinámicamente -->
+            </select>
+            <span id="errorcomunaEntrega" class="error-mensaje"></span>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="direccionEntrega">Dirección</label>
+            <input type="text" id="direccionEntrega" placeholder="Calle, número">
+            <span id="errordireccionEntrega" class="error-mensaje"></span>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="complementoEntrega">Complemento (opcional)</label>
+            <input type="text" id="complementoEntrega" placeholder="Depto, Casa, Oficina">
+          </div>
+        </div>
+
+        <div class="botones-formulario">
+          <button type="button" onclick="cerrarFormulario()" class="btn-secundario">Cancelar</button>
+          <button type="submit" onclick="confirmarPedido()" class="btn-primario">
+            Confirmar Pedido
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="{% static 'autoparts/js/firebase.js' %}"></script>
+  <script src="{% static 'autoparts/js/java.js' %}"></script>
+</body>
+</html> 

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar Sesión - AutoParts</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-pagina">
+
+  <div class="contenedor-formulario">
+    <h2 class="titulo-formulario">Iniciar Sesión</h2>
+
+    <form id="formLogin" novalidate>
+      <div class="campo-grupo">
+        <input type="email" id="correoLogin" placeholder="Correo electrónico" required>
+        <span id="error-correoLogin" class="error-mensaje"></span>
+      </div>
+
+      <div class="campo-grupo">
+        <input type="password" id="passwordLogin" placeholder="Contraseña" required>
+        <span id="error-passwordLogin" class="error-mensaje"></span>
+      </div>
+
+      <button type="submit" class="boton-formulario">Ingresar</button>
+    </form>
+
+    <p class="enlace-formulario">
+      ¿No tienes una cuenta? <a href="registro.html">Regístrate aquí</a>
+    </p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="java.js"></script>
+</body>
+</html>

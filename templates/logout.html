@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}¡Hasta Pronto! - AutoParts{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center p-5">
+                    <i class="fas fa-car-side fa-4x text-primary mb-4 animate__animated animate__fadeInLeft"></i>
+                    
+                    <h2 class="mb-4">¡Hasta Pronto!</h2>
+                    
+                    <p class="lead mb-4">
+                        "Como un motor bien afinado, esperamos verte pronto de vuelta en nuestra pista. 
+                        ¡Que tengas un excelente viaje!"
+                    </p>
+                    
+                    <div class="mb-4">
+                        <p class="text-muted">
+                            Gracias por visitar AutoParts. Recuerda que siempre estamos aquí para ayudarte 
+                            a mantener tu vehículo en las mejores condiciones.
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'home' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-home me-2"></i>Volver al Inicio
+                        </a>
+                        <a href="{% url 'login' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Agregar animaciones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+{% endblock %} 

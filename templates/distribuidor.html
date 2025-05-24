@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel de Distribuidor{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Menú lateral -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-user-tie me-2"></i>Panel de Distribuidor
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#dashboard" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-chart-line me-2"></i>Dashboard
+                    </a>
+                    <a href="#productos" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i>Productos
+                    </a>
+                    <a href="#pedidos" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag me-2"></i>Pedidos
+                    </a>
+                    <a href="#clientes" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i>Clientes
+                    </a>
+                    <a href="#reportes" class="list-group-item list-group-item-action">
+                        <i class="fas fa-file-alt me-2"></i>Reportes
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-md-9">
+            <!-- Dashboard -->
+            <div id="dashboard" class="mb-4">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-shopping-cart fa-2x text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="card-subtitle mb-1">Ventas del Mes</h6>
+                                        <h3 class="card-title mb-0">$1.250.000</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-box fa-2x text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="card-subtitle mb-1">Productos</h6>
+                                        <h3 class="card-title mb-0">150</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-users fa-2x text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="card-subtitle mb-1">Clientes</h6>
+                                        <h3 class="card-title mb-0">45</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos -->
+            <div id="productos" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-box me-2"></i>Productos</span>
+                    <button class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i>Nuevo Producto
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-image me-2"></i>Imagen</th>
+                                    <th><i class="fas fa-box me-2"></i>Producto</th>
+                                    <th><i class="fas fa-tag me-2"></i>Categoría</th>
+                                    <th><i class="fas fa-dollar-sign me-2"></i>Precio</th>
+                                    <th><i class="fas fa-warehouse me-2"></i>Stock</th>
+                                    <th><i class="fas fa-cog me-2"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <img src="{% static 'autoparts/img/no-image.png' %}" alt="Producto" style="width: 50px;">
+                                    </td>
+                                    <td>Producto 1</td>
+                                    <td>Frenos</td>
+                                    <td>$25.000</td>
+                                    <td>10</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedidos -->
+            <div id="pedidos" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-shopping-bag me-2"></i>Pedidos Recientes
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-hashtag me-2"></i>Pedido</th>
+                                    <th><i class="fas fa-user me-2"></i>Cliente</th>
+                                    <th><i class="fas fa-calendar me-2"></i>Fecha</th>
+                                    <th><i class="fas fa-dollar-sign me-2"></i>Total</th>
+                                    <th><i class="fas fa-info-circle me-2"></i>Estado</th>
+                                    <th><i class="fas fa-cog me-2"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#001</td>
+                                    <td>Juan Pérez</td>
+                                    <td>01/01/2025</td>
+                                    <td>$50.000</td>
+                                    <td><span class="badge bg-success">Entregado</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clientes -->
+            <div id="clientes" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-users me-2"></i>Clientes
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-user me-2"></i>Nombre</th>
+                                    <th><i class="fas fa-envelope me-2"></i>Email</th>
+                                    <th><i class="fas fa-phone me-2"></i>Teléfono</th>
+                                    <th><i class="fas fa-shopping-cart me-2"></i>Pedidos</th>
+                                    <th><i class="fas fa-cog me-2"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Juan Pérez</td>
+                                    <td>juan@email.com</td>
+                                    <td>+56912345678</td>
+                                    <td>5</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reportes -->
+            <div id="reportes" class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-file-alt me-2"></i>Reportes
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-chart-line me-2"></i>Ventas por Mes
+                                    </h5>
+                                    <p class="card-text">Generar reporte de ventas mensual.</p>
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-download me-2"></i>Descargar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-box me-2"></i>Inventario
+                                    </h5>
+                                    <p class="card-text">Generar reporte de inventario actual.</p>
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-download me-2"></i>Descargar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

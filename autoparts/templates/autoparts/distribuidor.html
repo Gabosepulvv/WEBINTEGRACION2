@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoParts - Portal Distribuidor</title>
+  <link rel="stylesheet" href="{% static 'autoparts/css/style.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="distribuidor-portal">
+  <nav class="navbar navbar-distribuidor">
+    <div class="logo">
+      <img src="{% static 'autoparts/img/logo.png' %}" alt="AutoParts Logo">
+      <h1>AutoParts - Distribuidores</h1>
+    </div>
+    <div class="nav-buttons">
+      <button class="carrito-icono" onclick="toggleCarrito()">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="carrito-contador">0</span>
+      </button>
+      <button class="btn-usuario">
+        <i class="fas fa-user"></i>
+        Mi Cuenta Distribuidor
+      </button>
+    </div>
+  </nav>
+
+  <div class="dashboard-distribuidor">
+    <div class="stats-container">
+      <div class="stat-card">
+        <i class="fas fa-shopping-bag"></i>
+        <h3>Pedidos del Mes</h3>
+        <p id="pedidos-mes">0</p>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-percentage"></i>
+        <h3>Descuento Actual</h3>
+        <p id="descuento-actual">25%</p>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-dollar-sign"></i>
+        <h3>Total Ahorrado</h3>
+        <p id="total-ahorrado">$0</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="categorias-nav">
+    <button class="categoria-btn active" onclick="filtrarProductos('todos')">Todos</button>
+    <button class="categoria-btn" onclick="filtrarProductos('baterias')">Baterías</button>
+    <button class="categoria-btn" onclick="filtrarProductos('neumaticos')">Neumáticos</button>
+    <button class="categoria-btn" onclick="filtrarProductos('frenos')">Frenos</button>
+    <button class="categoria-btn" onclick="filtrarProductos('aceites')">Aceites</button>
+  </div>
+
+  <!-- Sidebar del carrito mejorado -->
+  <div class="sidebar" id="carritoSidebar">
+    <div class="carrito-header">
+      <h3>Carrito de Compras - Distribuidor</h3>
+      <button onclick="toggleCarrito()" class="btn-cerrar"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="carritoContenido" class="carrito-items"></div>
+    <div class="carrito-footer">
+      <div class="descuentos-info">
+        <p>Descuento Distribuidor: <span id="descuento-distribuidor">25%</span></p>
+        <p>Subtotal: $<span id="subtotal">0</span></p>
+        <p>Descuento: -$<span id="descuento-total">0</span></p>
+      </div>
+      <p><strong>Total Final: $<span id="carritoTotal">0</span></strong></p>
+      <button class="btn-comprar" onclick="mostrarFormularioEntrega()">
+        <i class="fas fa-shopping-bag"></i> Realizar Pedido Mayorista
+      </button>
+    </div>
+  </div>
+
+  <!-- Productos con diseño mejorado -->
+  <section class="catalogo-contenedor" id="productos-distribuidor">
+    <div class="filtros">
+      <input type="text" id="busqueda" placeholder="Buscar productos..." class="busqueda-input">
+      <select id="ordenar" class="ordenar-select">
+        <option value="relevancia">Ordenar por Relevancia</option>
+        <option value="precio-bajo">Precio: Menor a Mayor</option>
+        <option value="precio-alto">Precio: Mayor a Menor</option>
+        <option value="descuento">Mayor Descuento</option>
+      </select>
+      <select id="cantidad-minima" class="cantidad-select">
+        <option value="0">Sin mínimo</option>
+        <option value="10">Mínimo 10 unidades</option>
+        <option value="50">Mínimo 50 unidades</option>
+        <option value="100">Mínimo 100 unidades</option>
+      </select>
+    </div>
+    <div class="productos-grid" id="productos-grid">
+      <!-- Los productos se cargarán dinámicamente aquí -->
+    </div>
+  </section>
+
+  <!-- Formulario de entrega mejorado -->
+  <div id="formEntrega" class="modal">
+    <div class="modal-contenido">
+      <div class="modal-header">
+        <h2>Detalles de Pedido Mayorista</h2>
+        <button onclick="cerrarFormulario()" class="btn-cerrar"><i class="fas fa-times"></i></button>
+      </div>
+
+      <div class="formulario-pasos">
+        <div class="paso active">1. Datos Empresa</div>
+        <div class="paso">2. Dirección</div>
+        <div class="paso">3. Confirmación</div>
+      </div>
+
+      <form id="formularioEntrega" onsubmit="return false;">
+        <div class="campo-formulario">
+          <label for="nombreEmpresa">Nombre de la Empresa</label>
+          <input type="text" id="nombreEmpresa" required>
+          <span id="errornombreEmpresa" class="error-mensaje"></span>
+        </div>
+
+        <div class="campo-formulario">
+          <label for="rutEmpresa">RUT Empresa</label>
+          <input type="text" id="rutEmpresa" required>
+          <span id="errorrutEmpresa" class="error-mensaje"></span>
+        </div>
+
+        <div class="campo-formulario">
+          <label for="contactoEntrega">Número de contacto</label>
+          <input type="tel" id="contactoEntrega" required>
+          <span id="errorcontactoEntrega" class="error-mensaje"></span>
+        </div>
+
+        <div class="campo-formulario">
+          <label for="emailEntrega">Correo electrónico empresarial</label>
+          <input type="email" id="emailEntrega" required>
+          <span id="erroremailEntrega" class="error-mensaje"></span>
+        </div>
+
+        <div class="opciones-entrega">
+          <h3>Método de entrega</h3>
+          <label class="opcion-radio">
+            <input type="radio" name="tipoEntrega" value="retiro" checked>
+            <span class="radio-custom"></span>
+            Retiro en bodega
+          </label>
+          <label class="opcion-radio">
+            <input type="radio" name="tipoEntrega" value="delivery">
+            <span class="radio-custom"></span>
+            Despacho a dirección
+          </label>
+        </div>
+
+        <div id="formDelivery" class="campos-delivery">
+          <div class="campo-formulario">
+            <label for="comunaEntrega">Comuna</label>
+            <select id="comunaEntrega" required>
+              <option value="">Seleccione una comuna</option>
+              <!-- Agregar comunas dinámicamente -->
+            </select>
+            <span id="errorcomunaEntrega" class="error-mensaje"></span>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="direccionEntrega">Dirección</label>
+            <input type="text" id="direccionEntrega" placeholder="Calle, número">
+            <span id="errordireccionEntrega" class="error-mensaje"></span>
+          </div>
+
+          <div class="campo-formulario">
+            <label for="complementoEntrega">Complemento</label>
+            <input type="text" id="complementoEntrega" placeholder="Bodega, Oficina, Piso">
+          </div>
+        </div>
+
+        <div class="campo-formulario">
+          <label for="notasAdicionales">Notas adicionales</label>
+          <textarea id="notasAdicionales" rows="3" placeholder="Instrucciones especiales de entrega o comentarios"></textarea>
+        </div>
+
+        <div class="botones-formulario">
+          <button type="button" onclick="cerrarFormulario()" class="btn-secundario">Cancelar</button>
+          <button type="submit" onclick="confirmarPedido()" class="btn-primario">
+            Confirmar Pedido Mayorista
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="{% static 'autoparts/js/firebase.js' %}"></script>
+  <script src="{% static 'autoparts/js/java.js' %}"></script>
+</body>
+</html> 

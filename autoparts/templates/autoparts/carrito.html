@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Carrito{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if items %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio Unitario</th>
+                                <th>Cantidad</th>
+                                <th>Subtotal</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" class="me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                        <div>
+                                            <h6 class="mb-0">{{ item.producto.nombre }}</h6>
+                                            <small class="text-muted">{{ item.producto.categoria }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>${{ item.producto.precio|floatformat:2 }}</td>
+                                <td>
+                                    {% if es_distribuidor %}
+                                    <form action="{% url 'actualizar_carrito' item.id %}" method="post" class="d-flex align-items-center">
+                                        {% csrf_token %}
+                                        <input type="number" name="cantidad" value="{{ item.cantidad }}" 
+                                               min="10" class="form-control form-control-sm" style="width: 80px;"
+                                               onchange="this.form.submit()">
+                                        <small class="text-muted ms-2">Mín. 10</small>
+                                    </form>
+                                    {% else %}
+                                    <div class="input-group input-group-sm" style="width: 120px;">
+                                        <form action="{% url 'actualizar_carrito' item.id %}" method="post" class="d-flex">
+                                            {% csrf_token %}
+                                            <button type="submit" name="cantidad" value="{{ item.cantidad|add:'-1' }}" 
+                                                    class="btn btn-outline-secondary" {% if item.cantidad <= 1 %}disabled{% endif %}>-</button>
+                                            <input type="text" class="form-control text-center" value="{{ item.cantidad }}" readonly>
+                                            <button type="submit" name="cantidad" value="{{ item.cantidad|add:'1' }}" 
+                                                    class="btn btn-outline-secondary">+</button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td>${{ item.subtotal|floatformat:2 }}</td>
+                                <td>
+                                    <form action="{% url 'eliminar_del_carrito' item.id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% if es_distribuidor %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Como distribuidor, obtienes un 5% de descuento en pedidos de 10 o más unidades por producto.
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-end">
+                                    <p class="mb-1">Subtotal: ${{ subtotal|floatformat:2 }}</p>
+                                    {% if descuento > 0 %}
+                                    <p class="mb-1 text-success">Descuento: -${{ descuento|floatformat:2 }}</p>
+                                    {% endif %}
+                                    <h4 class="mb-0">Total: ${{ total|floatformat:2 }}</h4>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <a href="{% url 'catalogo' %}" class="btn btn-outline-primary me-2">
+                                        <i class="fas fa-arrow-left me-2"></i>Seguir Comprando
+                                    </a>
+                                    <a href="{% url 'checkout' %}" class="btn btn-success">
+                                        <i class="fas fa-check me-2"></i>Proceder al Pago
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-shopping-cart display-1 text-muted mb-3"></i>
+                    <h4>Tu carrito está vacío</h4>
+                    <p class="text-muted">¡Explora nuestro catálogo y encuentra productos increíbles!</p>
+                    <a href="{% url 'catalogo' %}" class="btn btn-primary">
+                        <i class="fas fa-shopping-basket me-2"></i>Ir al Catálogo
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

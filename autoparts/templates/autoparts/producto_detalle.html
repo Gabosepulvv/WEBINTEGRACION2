@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ producto.nombre }} - AutoParts{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'catalogo' %}">Catálogo</a></li>
+            <li class="breadcrumb-item active">{{ producto.nombre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Imagen del producto -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                {% else %}
+                <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="card-img-top" alt="{{ producto.nombre }}">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Detalles del producto -->
+        <div class="col-md-6">
+            <h1 class="mb-3">{{ producto.nombre }}</h1>
+            <p class="text-muted mb-3">Código: {{ producto.codigo }}</p>
+            
+            <div class="mb-4">
+                <h2 class="h4">Descripción</h2>
+                <p>{{ producto.descripcion }}</p>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="h5">Especificaciones</h3>
+                <ul class="list-unstyled">
+                    <li><strong>Categoría:</strong> {{ producto.categoria.nombre }}</li>
+                    <li><strong>Marca:</strong> {{ producto.marca }}</li>
+                    <li><strong>Stock:</strong> {{ producto.stock }} unidades</li>
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <h3 class="h2 text-primary mb-3">${{ producto.precio }}</h3>
+                {% if user.perfil.tipo_usuario == 'distribuidor' %}
+                <p class="text-muted">
+                    <i class="fas fa-tag me-1"></i>
+                    Descuento del 5% en pedidos de 10+ unidades
+                </p>
+                {% endif %}
+            </div>
+
+            {% if producto.stock > 0 %}
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'agregar_al_carrito' producto.id %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <label for="cantidad" class="form-label">Cantidad:</label>
+                            <select name="cantidad" id="cantidad" class="form-select">
+                                {% for i in "x"|rjust:producto.stock|make_list %}
+                                <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Debes <a href="{% url 'login' %}">iniciar sesión</a> para agregar productos al carrito.
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Producto temporalmente sin stock
+            </div>
+            {% endif %}
+
+            <!-- Características adicionales -->
+            <div class="mt-4">
+                <h3 class="h5 mb-3">Características</h3>
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>Garantía de fábrica</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-truck text-primary me-2"></i>
+                            <span>Envío a todo Chile</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-shield-alt text-info me-2"></i>
+                            <span>Producto original</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-undo text-warning me-2"></i>
+                            <span>Devolución gratis</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos relacionados -->
+    {% if productos_relacionados %}
+    <div class="mt-5">
+        <h3 class="mb-4">Productos Relacionados</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {% for prod in productos_relacionados %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if prod.imagen %}
+                    <img src="{{ prod.imagen.url }}" class="card-img-top" alt="{{ prod.nombre }}">
+                    {% else %}
+                    <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="card-img-top" alt="{{ prod.nombre }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ prod.nombre }}</h5>
+                        <p class="card-text">{{ prod.descripcion|truncatewords:20 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0">${{ prod.precio }}</span>
+                            <a href="{% url 'producto_detalle' prod.id %}" class="btn btn-outline-primary btn-sm">
+                                Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

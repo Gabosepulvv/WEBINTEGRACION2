@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'catalogo' %}">Catálogo</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ producto.nombre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Imagen del Producto -->
+        <div class="col-md-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="object-fit: cover; height: 400px;">
+                {% else %}
+                <img src="{% static 'autoparts/img/productos/default.svg' %}" class="card-img-top" alt="Imagen no disponible" style="object-fit: cover; height: 400px;">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Detalles del Producto -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4">
+                <h1 class="h2 mb-3">{{ producto.nombre }}</h1>
+                <p class="text-muted mb-2">Código: {{ producto.codigo }}</p>
+                <p class="text-muted mb-4">Categoría: {{ producto.categoria.nombre }}</p>
+
+                <div class="mb-4">
+                    <h5>Descripción</h5>
+                    <p>{{ producto.descripcion }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Precios</h5>
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <span>Precio Neto:</span>
+                        <span class="h5 mb-0">${{ producto.precio|floatformat:0 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                        <span>IVA (19%):</span>
+                        <span class="h5 mb-0">${{ producto.precio|multiply:0.19|floatformat:0 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="h5 mb-0">Precio Total:</span>
+                        <span class="h4 mb-0 text-primary">${{ precio_con_iva|floatformat:0 }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h5>Estado</h5>
+                    {% if producto.stock > 0 %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>Producto disponible
+                        <span class="badge bg-success ms-2">Stock: {{ producto.stock }}</span>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-times-circle me-2"></i>Producto agotado
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-grid gap-2">
+                    {% if producto.stock > 0 %}
+                    <button class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-cart me-2"></i>Agregar al Carrito
+                    </button>
+                    {% endif %}
+                    <a href="{% url 'catalogo' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Volver al Catálogo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.breadcrumb-item a {
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: var(--bs-gray-600);
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.btn-primary, .btn-outline-secondary {
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 300px !important;
+    }
+}
+</style>
+{% endblock %} 

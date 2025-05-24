@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Catálogo - AutoParts{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilos para el catálogo al estilo Mercado Libre */
+    .filtros-sidebar {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 90px;
+    }
+
+    .filtro-seccion {
+        border-bottom: 1px solid #e6e6e6;
+        padding: 15px;
+    }
+
+    .filtro-seccion:last-child {
+        border-bottom: none;
+    }
+
+    .filtro-titulo {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 12px;
+    }
+
+    .producto-card {
+        background: white;
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .producto-card:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+
+    .producto-img-container {
+        height: 220px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .producto-img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+    .producto-detalles {
+        padding: 16px;
+    }
+
+    .producto-precio {
+        font-size: 24px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .producto-envio {
+        color: #00a650;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .producto-nombre {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+    .producto-stock {
+        font-size: 13px;
+        color: #999;
+    }
+
+    .badge-stock {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .ordenar-select {
+        border: 1px solid #e6e6e6;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 14px;
+        color: #333;
+        width: auto;
+    }
+
+    .search-bar {
+        border-radius: 24px;
+        border: 2px solid #e6e6e6;
+        padding: 12px 20px;
+        font-size: 16px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .search-bar:focus {
+        border-color: #3483fa;
+        box-shadow: none;
+    }
+
+    .btn-buscar {
+        border-radius: 0 24px 24px 0;
+        padding: 12px 25px;
+    }
+
+    @media (max-width: 768px) {
+        .filtros-sidebar {
+            position: static;
+            margin-bottom: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Barra de búsqueda -->
+        <div class="col-12 mb-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <form class="d-flex">
+                            <div class="input-group">
+                                <input type="text" class="form-control search-bar" placeholder="Buscar repuestos...">
+                                <button class="btn btn-primary btn-buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar de filtros -->
+                <div class="col-lg-3 mb-4">
+                    <div class="filtros-sidebar">
+                        <div class="filtro-seccion">
+                            <h3 class="filtro-titulo">Categorías</h3>
+                            <div class="d-flex flex-column gap-2">
+                                <a href="{% url 'catalogo' %}" class="text-decoration-none {% if not categoria_seleccionada %}text-primary{% else %}text-dark{% endif %}">
+                                    Todos los productos
+                                </a>
+                                {% for categoria in categorias %}
+                                <a href="?categoria={{ categoria.id }}" 
+                                   class="text-decoration-none {% if categoria_seleccionada == categoria.id|stringformat:'s' %}text-primary{% else %}text-dark{% endif %}">
+                                    {{ categoria.nombre }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="filtro-seccion">
+                            <h3 class="filtro-titulo">Precio</h3>
+                            <div class="mb-3">
+                                <input type="range" class="form-range" min="0" max="100000" step="1000">
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" placeholder="Mín.">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" class="form-control form-control-sm" placeholder="Máx.">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="filtro-seccion">
+                            <h3 class="filtro-titulo">Disponibilidad</h3>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="stockDisponible">
+                                <label class="form-check-label" for="stockDisponible">
+                                    Con stock disponible
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid de productos -->
+                <div class="col-lg-9">
+                    <!-- Ordenamiento -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">{{ productos.count }} productos encontrados</h4>
+                        <select class="ordenar-select">
+                            <option value="">Ordenar por</option>
+                            <option value="precio_asc">Menor precio</option>
+                            <option value="precio_desc">Mayor precio</option>
+                            <option value="nombre">Nombre</option>
+                            <option value="mas_vendidos">Más vendidos</option>
+                        </select>
+                    </div>
+
+                    <!-- Lista de productos -->
+                    <div class="row g-4">
+                        {% for producto in productos %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="producto-card">
+                                <a href="{% url 'producto_detalle' producto.id %}" class="text-decoration-none">
+                                    <div class="producto-img-container">
+                                        {% if producto.imagen %}
+                                        <img src="{{ producto.imagen.url }}" class="producto-img" alt="{{ producto.nombre }}">
+                                        {% else %}
+                                        <img src="{% static 'autoparts/img/productos/default.svg' %}" class="producto-img" alt="Imagen no disponible">
+                                        {% endif %}
+                                    </div>
+                                    <div class="producto-detalles">
+                                        <div class="producto-precio">${{ producto.precio|floatformat:0 }}</div>
+                                        <div class="producto-envio">
+                                            <i class="fas fa-truck me-1"></i>
+                                            Envío gratis
+                                        </div>
+                                        <h3 class="producto-nombre">{{ producto.nombre }}</h3>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="producto-stock">
+                                                {% if producto.stock > 0 %}
+                                                <span class="badge bg-success badge-stock">
+                                                    <i class="fas fa-check me-1"></i>Stock disponible
+                                                </span>
+                                                {% else %}
+                                                <span class="badge bg-danger badge-stock">
+                                                    <i class="fas fa-times me-1"></i>Sin stock
+                                                </span>
+                                                {% endif %}
+                                            </span>
+                                            <small class="text-muted">Código: {{ producto.codigo }}</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info text-center">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No hay productos disponibles en esta categoría.
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Paginación -->
+                    {% if productos.has_other_pages %}
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if productos.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ productos.previous_page_number }}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for num in productos.paginator.page_range %}
+                            <li class="page-item {% if productos.number == num %}active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}">
+                                    {{ num }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                            
+                            {% if productos.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ productos.next_page_number }}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

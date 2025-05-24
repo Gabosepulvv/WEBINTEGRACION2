@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Catálogo - AutoParts{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Catálogo de Productos</h1>
+
+    <!-- Filtros y Búsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <form method="get" class="d-flex gap-2">
+                <input type="text" name="q" class="form-control" placeholder="Buscar productos..." value="{{ query|default:'' }}">
+                <select name="categoria" class="form-select" style="max-width: 200px;">
+                    <option value="">Todas las categorías</option>
+                    {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}" {% if categoria.id|stringformat:"i" == categoria_seleccionada %}selected{% endif %}>
+                        {{ categoria.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search me-1"></i>Buscar
+                </button>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" onchange="window.location.href=this.value;">
+                <option value="?orden=nombre" {% if request.GET.orden == 'nombre' %}selected{% endif %}>Ordenar por nombre</option>
+                <option value="?orden=precio_asc" {% if request.GET.orden == 'precio_asc' %}selected{% endif %}>Precio: Menor a Mayor</option>
+                <option value="?orden=precio_desc" {% if request.GET.orden == 'precio_desc' %}selected{% endif %}>Precio: Mayor a Menor</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Lista de Productos -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for producto in productos %}
+        <div class="col">
+            <div class="card h-100">
+                {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                {% else %}
+                <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="card-img-top" alt="{{ producto.nombre }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ producto.nombre }}</h5>
+                    <p class="card-text">{{ producto.descripcion|truncatewords:20 }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">Código: {{ producto.codigo }}</small>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 mb-0">${{ producto.precio|floatformat:"0" }}</span>
+                        {% if producto.stock > 0 %}
+                        <span class="badge bg-success">En Stock</span>
+                        {% else %}
+                        <span class="badge bg-danger">Sin Stock</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-grid gap-2">
+                        {% if user.is_authenticated %}
+                            {% if user.tipo_usuario == 'cliente' %}
+                                {% if producto.stock > 0 %}
+                                <button class="btn btn-success" onclick="agregarAlCarrito({{ producto.id }})">
+                                    <i class="fas fa-cart-plus me-1"></i>Agregar al Carrito
+                                </button>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        <a href="{% url 'producto_detalle' producto.id %}" class="btn btn-primary">
+                            <i class="fas fa-info-circle me-1"></i>Ver Detalles
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No se encontraron productos que coincidan con tu búsqueda.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación -->
+    {% if productos.has_other_pages %}
+    <nav aria-label="Navegación de páginas" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if productos.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ productos.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" aria-label="Anterior">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in productos.paginator.page_range %}
+            <li class="page-item {% if productos.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}">
+                    {{ num }}
+                </a>
+            </li>
+            {% endfor %}
+
+            {% if productos.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ productos.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}" aria-label="Siguiente">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    function agregarAlCarrito(productoId) {
+        // Aquí puedes implementar la lógica para agregar al carrito
+        // Por ejemplo, hacer una llamada AJAX a tu backend
+        fetch(`/agregar-al-carrito/${productoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Mostrar mensaje de éxito
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed bottom-0 end-0 p-3';
+                toast.style.zIndex = '11';
+                toast.innerHTML = `
+                    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <i class="fas fa-check-circle me-2"></i>Producto agregado al carrito
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                const toastElement = new bootstrap.Toast(toast.querySelector('.toast'));
+                toastElement.show();
+                
+                // Eliminar el toast después de que se oculte
+                toast.addEventListener('hidden.bs.toast', function () {
+                    toast.remove();
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}
+{% endblock %} 

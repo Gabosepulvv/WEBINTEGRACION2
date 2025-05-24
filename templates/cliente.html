@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mi Cuenta{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Menú lateral -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-user-circle me-2"></i>Mi Cuenta
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#perfil" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-id-card me-2"></i>Perfil
+                    </a>
+                    <a href="#pedidos" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag me-2"></i>Mis Pedidos
+                    </a>
+                    <a href="#favoritos" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart me-2"></i>Favoritos
+                    </a>
+                    <a href="#direcciones" class="list-group-item list-group-item-action">
+                        <i class="fas fa-map-marker-alt me-2"></i>Direcciones
+                    </a>
+                    <a href="#seguridad" class="list-group-item list-group-item-action">
+                        <i class="fas fa-lock me-2"></i>Seguridad
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-md-9">
+            <!-- Perfil -->
+            <div id="perfil" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-id-card me-2"></i>Mi Perfil
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="nombre" placeholder="Tu nombre">
+                                    <label for="nombre"><i class="fas fa-user me-2"></i>Nombre</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="apellido" placeholder="Tu apellido">
+                                    <label for="apellido"><i class="fas fa-user me-2"></i>Apellido</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" placeholder="tu@email.com">
+                                    <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="telefono" placeholder="Tu teléfono">
+                                    <label for="telefono"><i class="fas fa-phone me-2"></i>Teléfono</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Pedidos -->
+            <div id="pedidos" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-shopping-bag me-2"></i>Mis Pedidos
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-hashtag me-2"></i>Pedido</th>
+                                    <th><i class="fas fa-calendar me-2"></i>Fecha</th>
+                                    <th><i class="fas fa-dollar-sign me-2"></i>Total</th>
+                                    <th><i class="fas fa-info-circle me-2"></i>Estado</th>
+                                    <th><i class="fas fa-cog me-2"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#001</td>
+                                    <td>01/01/2025</td>
+                                    <td>$50.000</td>
+                                    <td><span class="badge bg-success">Entregado</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>Ver
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Favoritos -->
+            <div id="favoritos" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-heart me-2"></i>Mis Favoritos
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <img src="{% static 'autoparts/img/no-image.png' %}" class="card-img-top" alt="Producto">
+                                <div class="card-body">
+                                    <h5 class="card-title">Producto 1</h5>
+                                    <p class="card-text">$25.000</p>
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-shopping-cart me-1"></i>Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direcciones -->
+            <div id="direcciones" class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-map-marker-alt me-2"></i>Mis Direcciones
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary mb-3">
+                        <i class="fas fa-plus me-2"></i>Agregar Dirección
+                    </button>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Casa</h5>
+                            <p class="card-text">Calle Principal 123, Santiago, Chile</p>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i>Editar
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-trash me-1"></i>Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seguridad -->
+            <div id="seguridad" class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-lock me-2"></i>Seguridad
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="password_actual" placeholder="Contraseña actual">
+                                <label for="password_actual"><i class="fas fa-lock me-2"></i>Contraseña Actual</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="password_nueva" placeholder="Nueva contraseña">
+                                <label for="password_nueva"><i class="fas fa-lock me-2"></i>Nueva Contraseña</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" id="password_confirmar" placeholder="Confirmar contraseña">
+                                <label for="password_confirmar"><i class="fas fa-lock me-2"></i>Confirmar Contraseña</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Cambiar Contraseña
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

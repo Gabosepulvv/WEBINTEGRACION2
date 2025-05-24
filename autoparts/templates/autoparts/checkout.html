@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - AutoParts{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- Resumen del pedido -->
+        <div class="col-md-4 order-md-2 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Resumen del Pedido</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for item in items %}
+                        <li class="list-group-item d-flex justify-content-between lh-sm">
+                            <div>
+                                <h6 class="my-0">{{ item.producto.nombre }}</h6>
+                                <small class="text-muted">Cantidad: {{ item.cantidad }}</small>
+                            </div>
+                            <span class="text-muted">${{ item.subtotal|floatformat:2 }}</span>
+                        </li>
+                        {% endfor %}
+                        
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Subtotal</span>
+                            <strong>${{ subtotal|floatformat:2 }}</strong>
+                        </li>
+                        
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>IVA (19%)</span>
+                            <strong>${{ iva|floatformat:2 }}</strong>
+                        </li>
+                        
+                        {% if descuento > 0 %}
+                        <li class="list-group-item d-flex justify-content-between text-success">
+                            <span>Descuento</span>
+                            <strong>-${{ descuento|floatformat:2 }}</strong>
+                        </li>
+                        {% endif %}
+                        
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Total</span>
+                            <strong class="text-primary">${{ total|floatformat:2 }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario de pago -->
+        <div class="col-md-8 order-md-1">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Información de Pago</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'procesar_pago' %}">
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3">Información Personal</h5>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="apellido" class="form-label">Apellido</label>
+                                <input type="text" class="form-control" id="apellido" name="apellido" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">Dirección de Envío</h5>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion" required>
+                            </div>
+                            <div class="col-md-5">
+                                <label for="region" class="form-label">Región</label>
+                                <select class="form-select" id="region" name="region" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option>Metropolitana</option>
+                                    <option>Valparaíso</option>
+                                    <option>Biobío</option>
+                                    <!-- Agregar más regiones -->
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="comuna" class="form-label">Comuna</label>
+                                <select class="form-select" id="comuna" name="comuna" required>
+                                    <option value="">Seleccionar...</option>
+                                    <!-- Las comunas se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="codigo_postal" class="form-label">Código Postal</label>
+                                <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" required>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">Método de Pago</h5>
+                        <div class="my-3">
+                            <div class="form-check">
+                                <input id="webpay" name="metodo_pago" type="radio" class="form-check-input" value="webpay" checked required>
+                                <label class="form-check-label" for="webpay">WebPay</label>
+                            </div>
+                            <div class="form-check">
+                                <input id="transferencia" name="metodo_pago" type="radio" class="form-check-input" value="transferencia" required>
+                                <label class="form-check-label" for="transferencia">Transferencia Bancaria</label>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <button class="w-100 btn btn-primary btn-lg" type="submit">
+                            <i class="fas fa-lock me-2"></i>Proceder al Pago
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

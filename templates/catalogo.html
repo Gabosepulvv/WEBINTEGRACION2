@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Catálogo{% endblock %}
+
+{% block content %}
+<!-- Carrito Flotante -->
+<div class="cart-wrapper">
+    <div class="cart-icon" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+    </div>
+</div>
+
+<!-- Offcanvas Carrito -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
+    <div class="offcanvas-header bg-primary text-white">
+        <h5 class="offcanvas-title">
+            <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div id="cart-items" class="mb-3">
+            <!-- Los items del carrito se insertarán aquí dinámicamente -->
+        </div>
+        <div class="cart-summary border-top pt-3">
+            <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal:</span>
+                <span id="cart-subtotal">$0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>IVA (19%):</span>
+                <span id="cart-tax">$0</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <strong>Total:</strong>
+                <strong id="cart-total">$0</strong>
+            </div>
+            <button class="btn btn-primary w-100 mb-2">
+                <i class="fas fa-check me-2"></i>Proceder al Pago
+            </button>
+            <button class="btn btn-outline-danger w-100" onclick="clearCart()">
+                <i class="fas fa-trash me-2"></i>Vaciar Carrito
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Filtros -->
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-filter me-2"></i>Filtros
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <div class="mb-3">
+                            <label for="q" class="form-label"><i class="fas fa-search me-2"></i>Buscar</label>
+                            <input type="text" class="form-control" id="q" name="q" value="{{ query|default:'' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="categoria" class="form-label"><i class="fas fa-tags me-2"></i>Categoría</label>
+                            <select class="form-select" id="categoria" name="categoria">
+                                <option value="">Todas las categorías</option>
+                                {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}" {% if categoria.id|stringformat:"i" == categoria_seleccionada %}selected{% endif %}>
+                                    {{ categoria.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="orden" class="form-label"><i class="fas fa-sort me-2"></i>Ordenar por</label>
+                            <select class="form-select" id="orden" name="orden">
+                                <option value="-fecha_creacion" {% if orden == '-fecha_creacion' %}selected{% endif %}>Más recientes</option>
+                                <option value="precio_asc" {% if orden == 'precio_asc' %}selected{% endif %}>Precio: Menor a Mayor</option>
+                                <option value="precio_desc" {% if orden == 'precio_desc' %}selected{% endif %}>Precio: Mayor a Menor</option>
+                                <option value="nombre" {% if orden == 'nombre' %}selected{% endif %}>Nombre</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search me-2"></i>Aplicar Filtros
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Productos -->
+        <div class="col-md-9">
+            <h2 class="mb-4"><i class="fas fa-shopping-basket me-2"></i>Nuestros Productos</h2>
+            
+            {% if productos %}
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for producto in productos %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                        <img src="{% static producto.imagen_default %}" class="card-img-top" alt="{{ producto.nombre }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ producto.nombre }}</h5>
+                            <p class="card-text text-muted">{{ producto.descripcion|truncatechars:100 }}</p>
+                            <p class="card-text">
+                                <small class="text-muted"><i class="fas fa-tag me-1"></i>{{ producto.categoria.nombre }}</small>
+                            </p>
+                            <h6 class="card-subtitle mb-2 text-primary">
+                                <i class="fas fa-dollar-sign me-1"></i>{{ producto.precio|floatformat:0 }}
+                            </h6>
+                            {% if producto.stock > 0 %}
+                            <span class="badge bg-success mb-2"><i class="fas fa-check me-1"></i>En Stock</span>
+                            <button class="btn btn-primary w-100" onclick="addToCart({{ producto.id }}, '{{ producto.nombre }}', {{ producto.precio }}, '{% if producto.imagen %}{{ producto.imagen.url }}{% else %}{% static 'autoparts/img/no-image.png' %}{% endif %}')">
+                                <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                            </button>
+                            {% else %}
+                            <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Sin Stock</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{% url 'producto_detalle' producto.id %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-info-circle me-2"></i>Ver Detalles
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Paginación -->
+            {% if productos.has_other_pages %}
+            <nav aria-label="Navegación de páginas" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if productos.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ productos.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in productos.paginator.page_range %}
+                    <li class="page-item {% if productos.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endfor %}
+
+                    {% if productos.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ productos.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if categoria_seleccionada %}&categoria={{ categoria_seleccionada }}{% endif %}{% if orden %}&orden={{ orden }}{% endif %}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No se encontraron productos que coincidan con tu búsqueda.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Estilos del carrito -->
+<style>
+.cart-wrapper {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.cart-icon {
+    background: #0d6efd;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.cart-icon:hover {
+    transform: scale(1.1);
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#cart-items {
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.cart-item-details {
+    flex-grow: 1;
+}
+
+.cart-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.quantity-btn {
+    border: none;
+    background: #f8f9fa;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.quantity-btn:hover {
+    background: #e9ecef;
+}
+</style>
+
+<!-- Scripts del carrito -->
+<script>
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+function updateCartUI() {
+    const cartItems = document.getElementById('cart-items');
+    const cartCount = document.querySelector('.cart-count');
+    const cartSubtotal = document.getElementById('cart-subtotal');
+    const cartTax = document.getElementById('cart-tax');
+    const cartTotal = document.getElementById('cart-total');
+    
+    // Actualizar contador
+    cartCount.textContent = cart.reduce((total, item) => total + item.quantity, 0);
+    
+    // Actualizar items
+    cartItems.innerHTML = cart.map(item => `
+        <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-details">
+                <h6 class="mb-0">${item.name}</h6>
+                <small class="text-muted">$${item.price.toLocaleString()}</small>
+                <div class="cart-item-quantity">
+                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                    <span>${item.quantity}</span>
+                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                </div>
+            </div>
+            <button class="btn btn-sm btn-outline-danger ms-2" onclick="removeFromCart(${item.id})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `).join('');
+    
+    // Calcular totales
+    const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const tax = subtotal * 0.19;
+    const total = subtotal + tax;
+    
+    cartSubtotal.textContent = `$${subtotal.toLocaleString()}`;
+    cartTax.textContent = `$${tax.toLocaleString()}`;
+    cartTotal.textContent = `$${total.toLocaleString()}`;
+}
+
+function addToCart(id, name, price, image) {
+    const existingItem = cart.find(item => item.id === id);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        cart.push({ id, name, price, image, quantity: 1 });
+    }
+    
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartUI();
+    
+    // Mostrar notificación
+    const toast = document.createElement('div');
+    toast.className = 'toast position-fixed bottom-0 end-0 m-3';
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+        <div class="toast-header bg-primary text-white">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong class="me-auto">Producto Agregado</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">
+            ${name} ha sido agregado al carrito
+        </div>
+    `;
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+}
+
+function updateQuantity(id, newQuantity) {
+    if (newQuantity < 1) {
+        removeFromCart(id);
+        return;
+    }
+    
+    const item = cart.find(item => item.id === id);
+    if (item) {
+        item.quantity = newQuantity;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartUI();
+    }
+}
+
+function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartUI();
+}
+
+function clearCart() {
+    cart = [];
+    localStorage.removeItem('cart');
+    updateCartUI();
+}
+
+// Inicializar carrito al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    updateCartUI();
+});
+</script>
+{% endblock %} 
