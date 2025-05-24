@@ -4,6 +4,29 @@
 {% block title %}{{ producto.nombre }} - AutoParts{% endblock %}
 
 {% block content %}
+<style>
+    .producto-imagen {
+        max-height: 500px;
+        width: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .producto-imagen-container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .producto-relacionado-imagen {
+        height: 250px;
+        object-fit: contain;
+        width: 100%;
+    }
+</style>
+
 <div class="container py-5">
     <!-- Mensajes -->
     {% if messages %}
@@ -29,11 +52,11 @@
     <div class="row">
         <!-- Imagen del producto -->
         <div class="col-md-6 mb-4">
-            <div class="card">
+            <div class="producto-imagen-container">
                 {% if producto.imagen %}
-                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}">
+                <img src="{{ producto.imagen.url }}" class="producto-imagen" alt="{{ producto.nombre }}">
                 {% else %}
-                <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="card-img-top" alt="{{ producto.nombre }}">
+                <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="producto-imagen" alt="{{ producto.nombre }}">
                 {% endif %}
             </div>
         </div>
@@ -69,24 +92,31 @@
 
             {% if producto.stock > 0 %}
                 {% if user.is_authenticated %}
-                <form method="post" action="{% url 'agregar_al_carrito' producto.id %}" class="mb-4">
-                    {% csrf_token %}
-                    <div class="row align-items-center">
-                        <div class="col-auto">
-                            <label for="cantidad" class="form-label">Cantidad:</label>
-                            <select name="cantidad" id="cantidad" class="form-select">
-                                {% for i in "x"|rjust:producto.stock|make_list %}
-                                <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
-                            </button>
-                        </div>
+                    {% if user.is_superuser %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Como administrador, no puedes realizar compras en la plataforma.
                     </div>
-                </form>
+                    {% else %}
+                    <form method="post" action="{% url 'agregar_al_carrito' producto.id %}" class="mb-4">
+                        {% csrf_token %}
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <label for="cantidad" class="form-label">Cantidad:</label>
+                                <select name="cantidad" id="cantidad" class="form-select">
+                                    {% for i in "x"|rjust:producto.stock|make_list %}
+                                    <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
                 {% else %}
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
@@ -142,9 +172,9 @@
             <div class="col">
                 <div class="card h-100">
                     {% if prod.imagen %}
-                    <img src="{{ prod.imagen.url }}" class="card-img-top" alt="{{ prod.nombre }}">
+                    <img src="{{ prod.imagen.url }}" class="card-img-top producto-relacionado-imagen" alt="{{ prod.nombre }}">
                     {% else %}
-                    <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="card-img-top" alt="{{ prod.nombre }}">
+                    <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="card-img-top producto-relacionado-imagen" alt="{{ prod.nombre }}">
                     {% endif %}
                     <div class="card-body">
                         <h5 class="card-title">{{ prod.nombre }}</h5>

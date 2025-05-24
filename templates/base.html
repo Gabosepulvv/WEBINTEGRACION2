@@ -50,60 +50,28 @@
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-1"></i>{{ user.username }}
-                            {% if user.perfil.tipo_usuario == 'distribuidor' %}
-                            <span class="badge bg-warning text-dark">Distribuidor</span>
-                            {% else %}
-                            <span class="badge bg-info">Cliente</span>
-                            {% endif %}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <span class="dropdown-item-text">
-                                    <i class="fas fa-id-badge me-2"></i>
-                                    {% if user.perfil.tipo_usuario == 'distribuidor' %}
-                                    <strong>Distribuidor</strong>
-                                    <br>
-                                    <small class="text-muted">Descuento del 5% en pedidos de 10+ unidades</small>
-                                    {% else %}
-                                    <strong>Cliente</strong>
-                                    {% endif %}
-                                </span>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            {% if user.is_superuser %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'admin:index' %}">
-                                    <i class="fas fa-cogs me-2"></i>Panel de Administración
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            {% endif %}
-                            <li>
-                                <a class="dropdown-item" href="{% url 'ver_carrito' %}">
-                                    <i class="fas fa-shopping-cart me-2"></i>Mi Carrito
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'logout' %}">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                        {% if not user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'ver_carrito' %}">
+                                <i class="fas fa-shopping-cart"></i> Carrito
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% if user.is_staff %}
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">Panel de Administración</a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
+                            </ul>
+                        </li>
                     {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">
-                            <i class="fas fa-sign-in-alt me-1"></i>Iniciar Sesión
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'registro' %}">
-                            <i class="fas fa-user-plus me-1"></i>Registrarse
-                        </a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+                        </li>
                     {% endif %}
                 </ul>
             </div>

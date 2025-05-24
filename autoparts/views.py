@@ -148,33 +148,24 @@ def logout_view(request):
 
 @login_required
 def ver_carrito(request):
+    if request.user.is_superuser:
+        messages.error(request, 'Los administradores no pueden acceder al carrito de compras.')
+        return redirect('catalogo')
+        
     items = CarritoItem.objects.filter(usuario=request.user)
-    es_distribuidor = request.user.perfil.tipo_usuario == 'distribuidor'
-    
-    subtotal = sum(item.get_subtotal() for item in items)
-    iva = subtotal * Decimal('0.19')
-    descuento = Decimal('0')
-    
-    if es_distribuidor:
-        for item in items:
-            if item.cantidad >= 10:
-                descuento += item.get_subtotal() * Decimal('0.05')
-    
-    total = subtotal + iva - descuento
-    
-    context = {
+    total = sum(item.get_total() for item in items)
+    return render(request, 'autoparts/carrito.html', {
         'items': items,
-        'subtotal': subtotal,
-        'iva': iva,
-        'descuento': descuento,
-        'total': total,
-        'es_distribuidor': es_distribuidor
-    }
-    
-    return render(request, 'autoparts/carrito.html', context)
+        'total': total
+    })
 
 @login_required
 def agregar_al_carrito(request, producto_id):
+    # Verificar si el usuario es superusuario
+    if request.user.is_superuser:
+        messages.error(request, 'Los administradores no pueden realizar compras.')
+        return redirect('producto_detalle', producto_id=producto_id)
+        
     if request.method == 'POST':
         try:
             cantidad = int(request.POST.get('cantidad', 1))
