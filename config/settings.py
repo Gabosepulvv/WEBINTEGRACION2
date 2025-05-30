@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'autoparts',
 ]
 
@@ -137,3 +138,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 DEFAULT_FROM_EMAIL = 'no-reply@autoparts.com'
+
+# Configuración de Transbank Webpay Plus
+TRANSBANK_COMMERCE_CODE = '597055555532'
+TRANSBANK_API_KEY = '...'  # Reemplaza por tu API Key de pruebas
+TRANSBANK_ENVIRONMENT = 'TEST'

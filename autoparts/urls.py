@@ -13,4 +13,6 @@ urlpatterns = [
     path('distribuidor/', views.distribuidor, name='distribuidor'),
     path('checkout/', views.checkout, name='checkout'),
     path('procesar-pago/', views.procesar_pago, name='procesar_pago'),
+    path('iniciar-pago/', views.iniciar_pago, name='iniciar_pago'),
+    path('retorno-webpay/', views.retorno_webpay, name='retorno_webpay'),
 ] 

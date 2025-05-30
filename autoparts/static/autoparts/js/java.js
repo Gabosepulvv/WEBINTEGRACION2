@@ -38,7 +38,7 @@ if (listaPreview) {
         <img src="${getImageUrl(prod.imagen)}" alt="${prod.nombre}" class="producto-img" onerror="this.src='img/no-image.jpg'">
         <h3>${prod.nombre}</h3>
         <p>${prod.descripcion}</p>
-        <p><strong>Precio:</strong> $${prod.precioNormal.toLocaleString()} CLP</p>
+        <p><strong>Precio:</strong> $${prod.precioNormal.toLocaleString('es-CL')} CLP</p>
         <p class="stock ${stock > 0 ? 'en-stock' : 'sin-stock'}">
           <strong>Stock:</strong> ${stock} unidades
         </p>
@@ -86,8 +86,8 @@ if (contenedorCatalogo) {
           <div class="info-producto">
             <h3>${prod.nombre}</h3>
             <p>${prod.descripcion}</p>
-            <p><strong>Precio Cliente:</strong> $${prod.precioNormal.toLocaleString()} CLP</p>
-            ${rol === 'distribuidor' ? `<p><strong>Precio Distribuidor:</strong> $${precioB2B.toLocaleString()} CLP</p>` : ''}
+            <p><strong>Precio Cliente:</strong> $${prod.precioNormal.toLocaleString('es-CL')} CLP</p>
+            ${rol === 'distribuidor' ? `<p><strong>Precio Distribuidor:</strong> $${precioB2B.toLocaleString('es-CL')} CLP</p>` : ''}
             <p class="stock ${stock > 0 ? 'en-stock' : 'sin-stock'}">
               <strong>Stock disponible:</strong> ${stock} unidades
             </p>
@@ -119,7 +119,7 @@ if (contenedorCliente) {
         <div class="info-producto">
           <h3>${prod.nombre}</h3>
           <p>${prod.descripcion}</p>
-          <p><strong>Precio:</strong> $${prod.precioNormal.toLocaleString()} CLP</p>
+          <p><strong>Precio:</strong> $${prod.precioNormal.toLocaleString('es-CL')} CLP</p>
           <p class="stock ${stock > 0 ? 'en-stock' : 'sin-stock'}">
             <strong>Stock disponible:</strong> ${stock} unidades
           </p>
@@ -158,7 +158,7 @@ if (contenedorDistribuidor) {
         <div class="info-producto">
           <h3>${prod.nombre}</h3>
           <p>${prod.descripcion}</p>
-          <p><strong>Precio Distribuidor:</strong> $${precioB2B.toLocaleString()} CLP</p>
+          <p><strong>Precio Distribuidor:</strong> $${precioB2B.toLocaleString('es-CL')} CLP</p>
           <p class="stock ${stock > 0 ? 'en-stock' : 'sin-stock'}">
             <strong>Stock disponible:</strong> ${stock} unidades
           </p>
@@ -229,7 +229,7 @@ function actualizarCarritoUI() {
       <img src="${item.imagen}" alt="${item.nombre}" onerror="this.src='img/no-image.jpg'">
       <div class="item-carrito-info">
         <div class="item-carrito-nombre">${item.nombre}</div>
-        <div class="item-carrito-precio">$${item.precio.toLocaleString()} x ${item.cantidad}</div>
+        <div class="item-carrito-precio">$${item.precio.toLocaleString('es-CL')} x ${item.cantidad}</div>
       </div>
       <button class="item-carrito-eliminar" onclick="eliminarDelCarrito('${item.id}')">×</button>
     `;
@@ -238,7 +238,7 @@ function actualizarCarritoUI() {
   });
   
   if (total) {
-    total.textContent = totalPrecio.toLocaleString();
+    total.textContent = totalPrecio.toLocaleString('es-CL');
   }
 }
 
@@ -610,10 +610,10 @@ function mostrarProductos(productosAMostrar) {
         <p>${producto.descripcion}</p>
         <div class="producto-precio-container">
           ${esDistribuidor ? 
-            `<span class="precio-original">$${producto.precio.toLocaleString()}</span>` : 
+            `<span class="precio-original">$${producto.precio.toLocaleString('es-CL')}</span>` : 
             ''}
           <span class="producto-precio ${esDistribuidor ? 'precio-distribuidor' : ''}">
-            $${precioFinal.toLocaleString()}
+            $${precioFinal.toLocaleString('es-CL')}
           </span>
           ${esDistribuidor ? 
             '<span class="descuento-badge">-25%</span>' : 
@@ -676,7 +676,7 @@ function actualizarCarrito() {
       <img src="${item.imagen}" alt="${item.nombre}">
       <div class="item-info">
         <h4>${item.nombre}</h4>
-        <p>$${item.precio.toLocaleString()} x ${item.cantidad}</p>
+        <p>$${item.precio.toLocaleString('es-CL')} x ${item.cantidad}</p>
         <div class="item-controles">
           <button onclick="cambiarCantidad('${item.id}', -1)">-</button>
           <span>${item.cantidad}</span>
@@ -696,11 +696,11 @@ function actualizarCarrito() {
     const subtotal = total / 0.75;
     const descuento = subtotal - total;
     
-    subtotalElement.textContent = subtotal.toLocaleString();
-    descuentoElement.textContent = descuento.toLocaleString();
+    subtotalElement.textContent = subtotal.toLocaleString('es-CL');
+    descuentoElement.textContent = descuento.toLocaleString('es-CL');
   }
 
-  document.getElementById('carritoTotal').textContent = total.toLocaleString();
+  document.getElementById('carritoTotal').textContent = total.toLocaleString('es-CL');
   actualizarContadorCarrito();
 }
 

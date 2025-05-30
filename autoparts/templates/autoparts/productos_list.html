@@ -1,0 +1,101 @@
+{% load humanize %}
+{% load static %}
+
+<style>
+.card-img-top {
+    width: 250%;
+    height: 250%;
+    max-width: none;
+    padding: 0.25rem;
+    transition: transform 0.3s ease;
+    object-fit: contain;
+    transform: scale(2.5);
+}
+
+.card:hover .card-img-top {
+    transform: scale(2.7);
+}
+
+.card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.card-body {
+    flex: 1;
+}
+
+.imagen-container {
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    padding: 0.25rem;
+    min-height: 600px;
+}
+
+.col {
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+    .row-cols-md-2>* {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+}
+
+@media (min-width: 992px) {
+    .row-cols-lg-2>* {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+}
+</style>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4">
+    {% for producto in productos %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="imagen-container">
+                {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" class="card-img-top" alt="{{ producto.nombre }}" style="max-height: none;">
+                {% else %}
+                <img src="{% static 'autoparts/img/producto-default.jpg' %}" class="card-img-top" alt="{{ producto.nombre }}" style="max-height: none;">
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text">{{ producto.descripcion|truncatewords:20 }}</p>
+                <p class="card-text">
+                    <small class="text-muted">Código: {{ producto.codigo }}</small>
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="h5 mb-0">${{ producto.precio|floatformat:0|intcomma }}</span>
+                    {% if producto.stock > 0 %}
+                    <span class="badge bg-success">En Stock</span>
+                    {% else %}
+                    <span class="badge bg-danger">Sin Stock</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'producto_detalle' producto.id %}" class="btn btn-primary">
+                        <i class="fas fa-info-circle me-1"></i>Ver Detalles
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No se encontraron productos.
+        </div>
+    </div>
+    {% endfor %}
+</div> 

@@ -1,17 +1,17 @@
 /* Variables Globales */
 :root {
-  --primary-color: #0d6efd;
-  --secondary-color: #6c757d;
-  --success-color: #198754;
-  --dark-color: #212529;
-  --light-color: #f8f9fa;
-  --accent-color: #e74c3c;
-  --background-color: #f5f6fa;
-  --text-color: #2c3e50;
-  --border-color: #dcdde1;
+  --primary-color: #ffe600;
+  --secondary-color: #232336;
+  --success-color: #00adb5;
+  --dark-color: #18181b;
+  --light-color: #232336;
+  --accent-color: #ff6f61;
+  --background-color: #18181b;
+  --text-color: #000000;
+  --border-color: #28293d;
   --warning-color: #f1c40f;
   --error-color: #e74c3c;
-  --shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
 /* Estilos Generales */
@@ -145,10 +145,11 @@ footer {
 /* Dashboard Distribuidor */
 .dashboard-distribuidor {
   padding: 2rem;
-  background-color: white;
+  background-color: var(--secondary-color);
   margin: 1rem 2rem;
   border-radius: 8px;
   box-shadow: var(--shadow);
+  color: var(--text-color);
 }
 
 .stats-container {
@@ -158,10 +159,11 @@ footer {
 }
 
 .stat-card {
-  background-color: var(--background-color);
+  background-color: #232336;
   padding: 1.5rem;
   border-radius: 8px;
   text-align: center;
+  color: var(--text-color);
 }
 
 .stat-card i {
@@ -187,7 +189,7 @@ footer {
   gap: 1rem;
   padding: 1rem 2rem;
   overflow-x: auto;
-  background-color: white;
+  background-color: var(--secondary-color);
   box-shadow: var(--shadow);
 }
 
@@ -195,11 +197,12 @@ footer {
   background-color: var(--background-color);
   color: var(--text-color);
   white-space: nowrap;
+  border: 1px solid var(--border-color);
 }
 
 .categoria-btn:hover,
 .categoria-btn.active {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -232,12 +235,13 @@ footer {
 
 /* Tarjeta de producto */
 .producto-card {
-  background-color: white;
+  background-color: var(--secondary-color);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--shadow);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
+  color: var(--text-color);
 }
 
 .producto-card:hover {
@@ -259,15 +263,16 @@ footer {
 .producto-card .precio {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #0077cc;
+  color: var(--accent-color);
   margin: 0.5rem 0;
 }
 
 .categoria-filter {
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: var(--secondary-color);
   border-radius: 8px;
   margin-bottom: 2rem;
+  color: var(--text-color);
 }
 
 .badge {
@@ -283,10 +288,11 @@ footer {
   right: -400px;
   width: 400px;
   height: 100vh;
-  background-color: white;
-  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+  background-color: var(--secondary-color);
+  box-shadow: -2px 0 5px rgba(0,0,0,0.5);
   transition: right 0.3s ease;
   z-index: 1000;
+  color: var(--text-color);
 }
 
 .sidebar.active {
@@ -345,7 +351,7 @@ footer {
 }
 
 .modal-contenido {
-  background-color: white;
+  background-color: var(--secondary-color);
   width: 90%;
   max-width: 600px;
   margin: 2rem auto;
@@ -353,6 +359,7 @@ footer {
   padding: 2rem;
   max-height: 90vh;
   overflow-y: auto;
+  color: var(--text-color);
 }
 
 .modal-header {
@@ -374,10 +381,11 @@ footer {
   padding: 1rem;
   background-color: var(--background-color);
   position: relative;
+  color: var(--text-color);
 }
 
 .paso.active {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
   color: white;
 }
 
@@ -393,7 +401,7 @@ footer {
 }
 
 .paso.active:not(:last-child)::after {
-  border-left-color: var(--secondary-color);
+  border-left-color: var(--primary-color);
 }
 
 .campo-formulario {
@@ -462,21 +470,21 @@ footer {
 }
 
 .btn-primario {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
   color: white;
 }
 
 .btn-primario:hover {
-  background-color: #2980b9;
+  background-color: #6d3fd4;
 }
 
 .btn-secundario {
-  background-color: var(--background-color);
+  background-color: var(--secondary-color);
   color: var(--text-color);
 }
 
 .btn-secundario:hover {
-  background-color: #dcdde1;
+  background-color: #28293d;
 }
 
 /* Responsive */
@@ -741,9 +749,9 @@ body {
 .footer {
   text-align: center;
   padding: 30px;
-  background-color: #f7f7f7;
+  background-color: var(--dark-color);
   font-size: 0.9em;
-  color: #777;
+  color: #b0b0b0;
   margin-top: 60px;
 }
 .titulo-seccion {
@@ -764,7 +772,7 @@ body {
 
 /* ----------- FOOTER ----------- */
 .footer {
-  background-color: #f4f7fa;
+  background-color: var(--dark-color);
   text-align: center;
   padding: 25px;
   margin-top: 60px;
@@ -986,7 +994,7 @@ body {
   right: -400px;
   width: 400px;
   height: 100vh;
-  background-color: #ffffff;
+  background-color: var(--secondary-color);
   box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
   transition: right 0.3s ease-in-out;
   z-index: 1000;

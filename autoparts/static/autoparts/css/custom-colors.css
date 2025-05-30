@@ -1,0 +1,26 @@
+.bg-primary {
+    --bs-bg-opacity: 1;
+    background-color: rgb(45 69 104) !important;
+}
+
+.btn-primary {
+    --bs-btn-bg: #014761;
+    --bs-btn-border-color: #001d49;
+    --bs-btn-hover-bg: #6c757d;
+    --bs-btn-hover-border-color: #ddd;
+    --bs-btn-active-bg: #ddd;
+    --bs-btn-active-border-color: #ddd;
+}
+
+.text-primary {
+    color: rgb(45 69 104) !important;
+}
+
+.btn-outline-primary {
+    --bs-btn-color: #014761;
+    --bs-btn-border-color: rgb(45 69 104);
+    --bs-btn-hover-bg: #6c757d;
+    --bs-btn-hover-border-color: #ddd;
+    --bs-btn-active-bg: #ddd;
+    --bs-btn-active-border-color: #ddd;
+} 

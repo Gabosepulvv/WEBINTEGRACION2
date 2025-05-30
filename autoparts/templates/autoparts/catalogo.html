@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Catálogo - AutoParts{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'autoparts/css/custom-colors.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -51,7 +56,7 @@
                         <small class="text-muted">Código: {{ producto.codigo }}</small>
                     </p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="h5 mb-0">${{ producto.precio|floatformat:"0" }}</span>
+                        <span class="h5 mb-0">${{ producto.precio|floatformat:0|intcomma }}</span>
                         {% if producto.stock > 0 %}
                         <span class="badge bg-success">En Stock</span>
                         {% else %}

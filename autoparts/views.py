@@ -11,6 +11,10 @@ from decimal import Decimal
 from django.db import transaction
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
+from transbank.webpay.webpay_plus.transaction import Transaction
+from django.conf import settings
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 def get_default_image(categoria_nombre):
     """Retorna la imagen por defecto según la categoría"""
@@ -25,7 +29,8 @@ def get_default_image(categoria_nombre):
     return f'autoparts/img/categorias/{imagenes_por_categoria.get(categoria_nombre, "default.jpg")}'
 
 def index(request):
-    return render(request, 'autoparts/index.html')
+    productos = Producto.objects.all()[:6]  # Mostrar solo los primeros 6 productos
+    return render(request, 'autoparts/index.html', {'productos': productos})
 
 def catalogo(request):
     productos = Producto.objects.all()
@@ -265,3 +270,42 @@ def procesar_pago(request):
         return redirect('home')
     
     return redirect('checkout')
+
+def iniciar_pago(request):
+    items = CarritoItem.objects.filter(usuario=request.user)
+    if not items.exists():
+        messages.warning(request, 'Tu carrito está vacío.')
+        return redirect('ver_carrito')
+    subtotal = sum(item.get_subtotal() for item in items)
+    iva = subtotal * Decimal('0.19')
+    descuento = Decimal('0')
+    if request.user.perfil.tipo_usuario == 'distribuidor':
+        for item in items:
+            if item.cantidad >= 10:
+                descuento += item.get_subtotal() * Decimal('0.05')
+    total = subtotal + iva - descuento
+    buy_order = f"orden-{request.user.id}-{int(timezone.now().timestamp())}"
+    session_id = str(request.user.id)
+    amount = float(total)
+    return_url = request.build_absolute_uri('/retorno-webpay/')
+    response = Transaction.create(
+        buy_order=buy_order,
+        session_id=session_id,
+        amount=amount,
+        return_url=return_url
+    )
+    return redirect(response['url'] + '?token_ws=' + response['token'])
+
+@csrf_exempt
+def retorno_webpay(request):
+    token = request.GET.get('token_ws')
+    if not token:
+        messages.error(request, 'No se recibió el token de Webpay.')
+        return redirect('checkout')
+    response = Transaction.commit(token)
+    if response['status'] == 'AUTHORIZED':
+        # Limpiar el carrito
+        CarritoItem.objects.filter(usuario=request.user).delete()
+        return render(request, 'autoparts/pago_exitoso.html', {'response': response})
+    else:
+        return render(request, 'autoparts/pago_fallido.html', {'response': response})

@@ -67,15 +67,15 @@
                         <table class="table table-borderless">
                             <tr>
                                 <td>Precio Neto:</td>
-                                <td class="text-end">${{ producto.precio|floatformat:0 }}</td>
+                                <td class="text-end">${{ producto.precio|floatformat:0|intcomma }}</td>
                             </tr>
                             <tr>
                                 <td>IVA (19%):</td>
-                                <td class="text-end">${{ producto.precio|multiply:0.19|floatformat:0 }}</td>
+                                <td class="text-end">${{ producto.precio|multiply:0.19|floatformat:0|intcomma }}</td>
                             </tr>
                             <tr class="table-primary">
                                 <td><strong>Precio Total:</strong></td>
-                                <td class="text-end"><strong>${{ precio_con_iva|floatformat:0 }}</strong></td>
+                                <td class="text-end"><strong>${{ precio_con_iva|floatformat:0|intcomma }}</strong></td>
                             </tr>
                         </table>
                     </div>
